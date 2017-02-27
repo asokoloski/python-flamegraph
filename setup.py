@@ -12,13 +12,13 @@ setup(
     keywords = 'profiler flamegraph',
     url = 'https://github.com/evanhempel/python-flamegraph',
     classifiers=[
-      'Development Status :: 3 - Alpha',
-      'Environment :: Console',
-      'Intended Audience :: Developers',
-      'License :: Public Domain',
-      'Programming Language :: Python',
-      'Topic :: Software Development :: Debuggers',
-      ]
-    )
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: Public Domain',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Debuggers',
+    ]
+)
 
 
