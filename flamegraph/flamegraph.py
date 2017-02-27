@@ -16,22 +16,29 @@ def get_thread_name(ident):
             return th.getName()
     return str(ident) # couldn't find, return something useful anyways
 
-def default_format_entry(fname, line, fun, fmt='%(fun)s'):
-    return fmt % locals()
+_default_format = '%(fun)s@%(short_fname)s:%(line)s'
+def default_format_entry(fi, fmt):
+    return fmt % fi._asdict()
+
+FrameInfo = collections.namedtuple('FrameInfo', ['fname', 'short_fname', 'line', 'fun'])
+
+def extract_frame_info(frame):
+    for fn, ln, fun, text in traceback.extract_stack(frame)[1:]:
+        short_fname = re.sub(r'.*/', '', fn)
+        yield FrameInfo(fn, short_fname, ln, fun)
 
 def create_flamegraph_entry(frame, format_entry, collapse_recursion=False):
     # [1:] to skip first frame which is in this program
     if collapse_recursion:
         ret = []
         last = None
-        for fn, ln, fun, text in traceback.extract_stack(frame)[1:]:
-            if last != fun:
-                ret.append(format_entry(fn, ln, fun))
-            last = fun
+        for fi in extract_frame_info(frame):
+            if last != fi.fun:
+                ret.append(format_entry(fi))
+            last = fi.fun
         return ';'.join(ret)
 
-    return ';'.join(format_entry(fn, ln, fun)
-                    for fn, ln, fun, text in traceback.extract_stack(frame)[1:])
+    return ';'.join(format_entry(fi) for fi in extract_frame_info(frame))
 
 class Profiler:
     def __init__(self, fd, interval, filter, format_entry, collapse_recursion=False):
@@ -105,7 +112,7 @@ def main():
                         help='Regular expression to filter which stack frames are profiled.  The '
                         'regular expression is run against each entire line of output so you can '
                         'filter by function or thread or both.')
-    parser.add_argument('-F', '--format', type=str, nargs='?', default='%(fun)s',
+    parser.add_argument('-F', '--format', type=str, nargs='?', default=_default_format,
                         help='Format-string (old-style) for encoding each stack frame into text.'
                         ' May include: "fn", "fun" and "line"')
 
