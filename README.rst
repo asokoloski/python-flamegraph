@@ -1,11 +1,15 @@
 A simple statistical profiler which outputs in format suitable for FlameGraph_.
 
+Based on https://github.com/evanhempel/python-flamegraph but modified
+to use signal.setitimer instead of a separate thread, in order to more
+accurately profile code that uses C extensions heavily.
+
 INSTALL:
 --------
 
 Simply run::
 
-  pip install git+https://github.com/evanhempel/python-flamegraph.git
+  pip install git+https://github.com/asokoloski/python-flamegraph.git
 
 USAGE:
 ------
@@ -16,7 +20,7 @@ Run your script under the profiler::
 
 Or, run the profiler from your script::
 
-  flamegraph.start_profile_thread(fd=open("./perf.log", "w"))
+  flamegraph.start_profiler(fd=open("./perf.log", "w"))
 
 Run Brendan Gregg's FlameGraph_ tool against the output::
 
@@ -41,8 +45,8 @@ Filtering can be done by passing a python regular expression to the
 ``-f`` or ``--filter`` command line option
 which will restrict output to only those lines which match.
 Filtering is done against the entire line so you can filter by
-function name, thread name, both, or even by
-more complex filters such as function ABC calls DEF (``ABC.*DEF``).
+function name or by more complex filters such as function
+ABC calls DEF (``ABC.*DEF``).
 
 Alternatively since the output is stackframes each on a line by itself,
 this can simply be done with a simple grep filter.::
