@@ -17,7 +17,7 @@ def get_thread_name(ident):
     return str(ident) # couldn't find, return something useful anyways
 
 _default_format = '%(fun)s@%(short_fname)s:%(line)s'
-def default_format_entry(fi, fmt):
+def default_format_entry(fi, fmt=_default_format):
     return fmt % fi._asdict()
 
 FrameInfo = collections.namedtuple('FrameInfo', ['fname', 'short_fname', 'line', 'fun'])
