@@ -61,10 +61,11 @@ class Profiler:
         atexit.register(self.stop)
 
     def on_itimer(self, signum, frame):
-        entry = create_flamegraph_entry(frame, self._format_entry, self._collapse_recursion)
-        if self._filter is None or self._filter.search(entry):
-            with self._lock:
+        if self._lock.acquire(blocking=False):
+            entry = create_flamegraph_entry(frame, self._format_entry, self._collapse_recursion)
+            if self._filter is None or self._filter.search(entry):
                 self._stats[entry] += 1
+            self._lock.release()
 
     def _write_results(self):
         with self._lock:
