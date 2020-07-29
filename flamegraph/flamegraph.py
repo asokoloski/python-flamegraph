@@ -131,7 +131,7 @@ def main():
     script_compiled = compile(open(args.script_file, 'rb').read(), args.script_file, 'exec')
     script_globals = {'__name__': '__main__', '__file__': args.script_file, '__package__': None}
 
-    start_time = time.clock()
+    start_time = time.process_time()
     profiler.start()
 
     try:
@@ -140,7 +140,7 @@ def main():
     finally:
         profiler.stop()
         print('Elapsed Time: %2.2f seconds.  Collected %d stack frames (%d unique)'
-              % (time.clock() - start_time, profiler.num_frames(), profiler.num_frames(unique=True)))
+              % (time.process_time() - start_time, profiler.num_frames(), profiler.num_frames(unique=True)))
 
 if __name__ == '__main__':
     main()
